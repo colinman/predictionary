@@ -13,8 +13,14 @@ var frequency = new Array();
 
 var filePath = path.join(__dirname + '/start.html'); //this is place holder for debugging and trial, we will accept filePath from database that calls this function
 
+
+
 fs.readFile(filePath, {encoding: 'utf-8'}, function(err,data){ //opens file
 	if (!err){
+	    console.log(data);
+	    data = data.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+	    data = data.replace(/\n/g," ");
+	    data = data.replace(/\s{2,}/g," ");
 	    var array = data.split(" "); //turns things separated by spaces as things in an array 
 	    var window = new Array();
 
