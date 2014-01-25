@@ -30,15 +30,15 @@ var max_rank = 300000;
 for(var i = 0; i<dictionary_freq.length; i++){
 	var word = dictionary_freq[i];
 	var combined_rank = dictionary_freq[word]; //adds the frequency from the dictionary to the combined rank
-	var found = 0;
+	var found = false;
 	for(var j = 0; j< my_freq.length; j++){
 		if(word === my_freq[j]){
-			found = 1;
-			combined_rank += my_freq[word] * (5000)/(my_num);
+			found = true;
+			combined_rank += my_freq[word] * (190000)/(my_num);
 			break;
 		}
 	}
-	if(found == 0)
+	if(!found)
 		combined_rank +=  median(my_freq); //adds median if can't be found in my_freq
 	}
 	if(max_rank > combined_rank){
