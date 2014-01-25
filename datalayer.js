@@ -22,8 +22,32 @@ var ufreq_topten_prefix = function(prefix, user, callback) {
     });
 }
 
+var get_fdict_freq = function(word, callback) {
+    var mongo = require('mongodb');
+    var monk = require('monk');
+    var db = monk('localhost:27017/predictionary');
+    var collection = db.get('words');
+    var pattern = new RegExp('^'+ word + '$');
+    collection.find({word:pattern}, {sort:{rank:1}, limit: 10}, function(e, docs) {
+	callback(docs);
+    });
+}
+
+var write_word_freq = function(frequencies, user) {
+    var mongo = require('mongodb');
+    var monk = require('monk');
+    var db = monk('localhost:27017/predictionary');
+    var collection = db.get('user_wfreq');
+    
+    for(var w in frequencies) {
+	collection.update({word:w, username:user}, {$inc:{freq:frequencies[w]}}, {upsert:true, multi:true});
+    }
+}
+
 module.exports.fdict_topten_prefix = fdict_topten_prefix;
 module.exports.ufreq_topten_prefix = ufreq_topten_prefix;
+module.exports.get_fdict_freq = get_fdict_freq;
+module.exports.write_word_freq = write_word_freq;
 
 
 // collection.find({},{},function(e,docs){
