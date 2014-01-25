@@ -1,20 +1,16 @@
-var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost:27017/predictionary');
-var collection = db.get('words');
+var fdict_topten_prefix = function(prefix, callback) {
+    var mongo = require('mongodb');
+    var monk = require('monk');
+    var db = monk('localhost:27017/predictionary');
+    var collection = db.get('words');
 
-function fdict_topten_prefix(prefix, callback) {
     var pattern = new RegExp('^'+ prefix);
     collection.find({word:pattern}, {sort:{rank:1, _id:0}, limit: 10}, function(e, docs) {
 	callback(docs);
     });
 }
 
-function print(words) {
-    console.log(words);
-}
-
-fdict_topten_prefix("ken", print);
+module.exports.fdict_topten_prefix = fdict_topten_prefix;
 
 // collection.find({},{},function(e,docs){
 //     console.log(docs);
