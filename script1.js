@@ -19,7 +19,9 @@ var process_file = function(filename, username) {
     fs.readFile(filePath, {encoding: 'utf-8'}, function(err, data){ //opens file
 	if (!err){
 	    //process data, removes punctuation, saves words into array
-	    data = data.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()]/g,"");
+	   // data = data.replace(/[\.,-\/#!$%\^&\*;:{}=\-_`~()0123456789\"\']/g,"");
+	   
+//	    data = data.replace(/^[\w-\s]+$/,"");
 	    data = data.replace(/\n/g," ");
 	    data = data.replace(/\s{2,}/g," ");
 	    var array = data.split(" ");
@@ -52,7 +54,9 @@ var process_file = function(filename, username) {
 
     /*Returns word at array[i] and increments frequency of word */
     function getWord(array, i) {
-	var word = array[i];
+	var word = array[i].replace(/[\W]+/g, "");
+	word = word.replace("\"" ,"");
+	word = word.replace("\'","");
 	console.log(word);
 	trackFrequency(word);
 	return word;
@@ -60,7 +64,16 @@ var process_file = function(filename, username) {
 
     /*Increments frequency of word in array */
     function trackFrequency(word) {
-	frequency[word] = (frequency[word]===undefined) ? 1 : frequency[word] + 1;
+	var pattern = new RegExp("[a-zA-Z0-9]");
+	if(pattern.test(word)) {
+	if(frequency[word]== undefined || isNaN(frequency[word])) {
+	    var i = 1;
+	    frequency[word] = i;
+	} else {
+	    frequency[word] ++;
+	}
+	}
+//	frequency[word] = (frequency[word]==undefined) ? 1 : (frequency[word] + 1);
     }
 };
 
