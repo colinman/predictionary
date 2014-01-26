@@ -1,0 +1,28 @@
+/* Filename: Word mapper
+ * -----------------
+ * Calls database to get the predicted word from a phrase
+ */
+
+var mapper = function(words, username, callbackf) {
+
+    var db = require("./datalayer.js");
+    var num = 0;
+    var prediction = null;
+
+    function callback(words){
+	num++;
+	if(words.length > 0) callbackf(words[0].word[0]);
+	else ngrams();
+    }
+
+    function ngrams()
+    {
+	if(num < 3) db.find_word_chunk(words[0], words[1], words[2], username, callback);
+	else callbackf("none");
+	words[num] = null;
+    }
+
+    ngrams();
+}
+
+module.exports.mapper = mapper;
