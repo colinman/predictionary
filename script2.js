@@ -5,7 +5,7 @@
 
 var db = require("./datalayer.js");
 
-var prefix = "col"; //get prefix, username, and map_override
+var prefix = "bre"; //get prefix, username, and map_override
 var username = "Colin";
 var mapped = new Array(); //array containing all prefixes after this particular three-word clause
 

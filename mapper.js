@@ -3,37 +3,26 @@
  * Calls database to get the predicted word from a phrase
  */
 
+var mapper = function(words, username, callbackf) {
 
-/*Gets the last three words from script3 as an array*/
-var words = new Array();
-var username;
+    var db = require("./datalayer.js");
+    var num = 0;
+    var prediction = null;
 
-var prediction=NULL;
-function callback(words){
-	var max_freq = 0;
-	if(words.length > 0){
-		for(var i = 0; i<words.length; i++){
-			var freq = get_fdict_freq(words[i]);
-			if(freq > max_freq){
-				max_freq = freq;
-				prediction = words[i];
-			}
-		}
-	}
+    function callback(words){
+	num++;
+	if(words.length > 0) callbackf(words[0].word[0]);
+	else ngrams();
+    }
+
+    function ngrams()
+    {
+	if(num < 3) db.find_word_chunk(words[0], words[1], words[2], username, callback);
+	else callbackf("");
+	words[num] = null;
+    }
+
+    ngrams();
 }
 
-for(var i = 0; i<3; i++){
-	var word1 = words[0];
-	var word2 = words[1];
-	var word3 = words[2];
-	next_chunk_word(word1, word2, word3, username, callback);
-	words[i] = NULL;
-}
-
-if(prediction != NULL){ 
-/*prediction is valid: JSon it to the browser*/
-}
-else{
-	return NULL;
-}
-
+module.exports.mapper = mapper;
