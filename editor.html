@@ -5,8 +5,41 @@
 <script type="text/javascript" src="./tinymce/tinymce.min.js"></script>
 <script type="text/javascript">
 
-var suggestion_length = 0;
-var suggestion_word = "est";
+var word1 = null;
+var word2 = null;
+var word3 = null;
+var suggestion_len = 0;
+var prefix = "";
+var original_text = "";
+var user = "colinman@stanford.edu";
+
+
+function add_word(new_word){
+	word1 = word2; //shifts all words one to the left
+	word2 = word3;
+	word3 = new_word;
+}
+
+function nextWord(word1, word2, word3, user, callback){
+	var httpRequest = new XMLHttpRequest;
+	var url = "/mapper?word1=" + word1 + "&word2+" + word2 + "&word3=" + word3 + "&user=" + user;
+	httpRequest.onreadystatechange = function(){
+		callback(httpRequest.responseText);
+	};
+	httpRequest.open('GET', url);
+	httpRequest.send();
+}
+
+function wordcomplete(prefix, callback){
+	var httpRequest = new XMLHttpRequest;
+	var url = "/wordcomplete?mapped=&prefix=" + prefix+ "&user=" + user;
+	httpRequest.onreadystatechange = function(){
+		callback(httpRequest.responseText);
+	};
+	httpRequest.open('GET', url);
+	httpRequest.send();
+}
+
 
 $( document ).ready(function() {
     tinymce.init({
@@ -17,14 +50,48 @@ $( document ).ready(function() {
          "searchreplace wordcount fullscreen nonbreaking",
          "save directionality emoticons paste textcolor"],
 	height: $( window ).height() - 110,
-	
+	force_br_newlines: true,
+	force_p_newlines: false,
+
 	setup: function(ed) {
-    	ed.on('keyup', function(e) {
-        	if(e.keyCode != 0) {
-				var originalText = $("#textfield").text();
-					
+    	ed.on('keypress', function(e) {
+			
+if(e.keyCode == 9) {
+
+                                wordcomplete(prefix, function(suggestion){
+                                      suggestion.length = prefix.length; //no resizing needed if next character is a space
+                                
+				      tinyMCE.activeEditor.setContent(original_text.substring(0, original_text.length-4)+" "+ suggestion);// autocomplete);
+                                });
+}
+
+else if(e.keyCode != 32){ //autocomplete
+				prefix += String.fromCharCode(e.keyCode);
+wordcomplete(prefix, function(suggestion) {
+
+				suggestion_len = suggestion.length;
+				var autocomplete = suggestion.substring(prefix.length, suggestion.length);
+				tinyMCE.activeEditor.setContent(original_text.substring(0, original_text.length-4)+" "+ prefix+autocomplete.fontcolor("lightgray"));// autocomplete);
+
+});
+
 			}
-    	});
+			else{
+				original_text = tinyMCE.activeEditor.getContent();
+				if(suggestion_len > prefix.length){
+					var front = original_text.substring(0, original_text.length-4-(suggestion_len-prefix.length)-37);
+					original_text = front+"</p>";
+					console.log(original_text);
+				}
+				add_word(original_text.substring(original_text.length-prefix.length-4, original_text.length-4));
+				prefix = "";
+				nextWord(word1, word2, word3, user, function(predicted) {
+				tinyMCE.activeEditor.setContent(original_text.substring(0, original_text.length-4) +" "+ predicted.fontcolor("lightgray"));
+				print_array();
+});
+			}
+			e.preventDefault();
+		});
 	}
 	
 	});
@@ -39,7 +106,7 @@ $( document ).ready(function() {
 
 <!-- Place this in the body of the page content -->
 <form method="post">
-    <textarea id="textfield"></textarea>
+    <textarea row="10" col="50" input="text" id="textfield"> </textarea>
 </form>
 
 </body>
