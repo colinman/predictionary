@@ -2,13 +2,8 @@
  * --------------------
  * Autocomplete!
 */
-var autocomplete = function(mapped, prefix, username) {
+var autocomplete = function(mapped, prefix, username, callbackf) {
 	var db = require("./datalayer.js");
-
-//	var prefix = "bre"; //get prefix, username, and map_override
-//	var username = "Colin";
-//	var mapped = new Array(); //array containing all prefixes after this particular three-word clause
-
 	var dictionary_rank = new Array(); //these are reached with function calls to the database
 	var my_freq;
 
@@ -35,7 +30,7 @@ var autocomplete = function(mapped, prefix, username) {
 		    }
 		}
 	    }
-	    console.log(prediction);
+	    callbackf(prediction);
 	}
 
 
@@ -70,7 +65,7 @@ var autocomplete = function(mapped, prefix, username) {
 
 	var my_map_name = map_contains_prefix();
 	if(my_map_name != null){
-	    console.log(prediction);
+	    callbackf(prediction);
 	} else{
 	    db.fdict_topten_prefix(prefix, callback_fdict); //sorted in rank order
 	}
