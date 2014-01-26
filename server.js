@@ -25,4 +25,4 @@ app.use("/wordcomplete", function(req, res) {
        });
 });
 
-app.listen(3000); //the port you want to use
+app.listen(8080); //the port you want to use

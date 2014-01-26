@@ -20,21 +20,21 @@ function add_word(new_word){
 	word3 = new_word;
 }
 
-function nextWord(word1, word2, word3, user){
-	var httpRequest;
-	var url = "www.predictionary.net/mapper?word1=" + word1 + "&word2+" + word2 + "&word3=" + word3 + "&user=" + user;
+function nextWord(word1, word2, word3, user, callback){
+	var httpRequest = new XMLHttpRequest;
+	var url = "/mapper?word1=" + word1 + "&word2+" + word2 + "&word3=" + word3 + "&user=" + user;
 	httpRequest.onreadystatechange = function(){
-		return httpRequest.responseText;
+		callback(httpRequest.responseText);
 	};
 	httpRequest.open('GET', url);
 	httpRequest.send();
 }
 
-function wordcomplete(prefix){
-	var httpRequest;
-	var url = "www.predictionary.net/wordcomplete?mapped=&prefix=" + prefix+ "&user=" + user;
+function wordcomplete(prefix, callback){
+	var httpRequest = new XMLHttpRequest;
+	var url = "/wordcomplete?mapped=&prefix=" + prefix+ "&user=" + user;
 	httpRequest.onreadystatechange = function(){
-		return httpRequest.responseText;
+		callback(httpRequest.responseText);
 	};
 	httpRequest.open('GET', url);
 	httpRequest.send();
@@ -55,12 +55,26 @@ $( document ).ready(function() {
 
 	setup: function(ed) {
     	ed.on('keypress', function(e) {
-			if(e.keyCode != 32){ //autocomplete
+			
+if(e.keyCode == 9) {
+
+                                wordcomplete(prefix, function(suggestion){
+                                      suggestion.length = prefix.length; //no resizing needed if next character is a space
+                                
+				      tinyMCE.activeEditor.setContent(original_text.substring(0, original_text.length-4)+" "+ suggestion);// autocomplete);
+                                });
+}
+
+else if(e.keyCode != 32){ //autocomplete
 				prefix += String.fromCharCode(e.keyCode);
-				var suggestion = wordcomplete(prefix);
+wordcomplete(prefix, function(suggestion) {
+
 				suggestion_len = suggestion.length;
 				var autocomplete = suggestion.substring(prefix.length, suggestion.length);
 				tinyMCE.activeEditor.setContent(original_text.substring(0, original_text.length-4)+" "+ prefix+autocomplete.fontcolor("lightgray"));// autocomplete);
+
+});
+
 			}
 			else{
 				original_text = tinyMCE.activeEditor.getContent();
@@ -71,9 +85,10 @@ $( document ).ready(function() {
 				}
 				add_word(original_text.substring(original_text.length-prefix.length-4, original_text.length-4));
 				prefix = "";
-				var predicted = nextWord(word1, word2, word3, user);
+				nextWord(word1, word2, word3, user, function(predicted) {
 				tinyMCE.activeEditor.setContent(original_text.substring(0, original_text.length-4) +" "+ predicted.fontcolor("lightgray"));
 				print_array();
+});
 			}
 			e.preventDefault();
 		});

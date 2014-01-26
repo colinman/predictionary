@@ -2,9 +2,12 @@ var dl = require("./datalayer.js");
 var script1 = require("./script1.js");
 var map = require("./mapper.js");
 
-var array = ["Beauty", "and", "the"];
+//var array = ["Beauty", "and", "the"];
 
-//script1.process_file("/hamlet.txt", "colinman@stanford.edu");
+script1.process_file("/English1.txt", "colinman@stanford.edu");
+script1.process_file("/English2.txt", "colinman@stanford.edu");
+script1.process_file("/English3.txt", "colinman@stanford.edu");
+script1.process_file("/English4.txt", "colinman@stanford.edu");
 
 //var array = {"words":2, "asdf":3};
 
@@ -15,7 +18,7 @@ function print(text) {
     console.log(text);
 }
 
-map.mapper(array, "colinman@stanford.edu", print);
+//map.mapper(array, "colinman@stanford.edu", print);
 
 /*
 var array = ["brie", "the", "argh"];
