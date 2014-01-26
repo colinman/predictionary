@@ -34,24 +34,32 @@ var get_fdict_freq = function(word, callback) {
 };
 
 var write_word_freq = function(frequencies, user) {
+
+    console.log("Write Frequency: " + frequencies);
+
     var mongo = require('mongodb');
     var monk = require('monk');
     var db = monk('localhost:27017/predictionary');
     var collection = db.get('user_wfreq');
     
     for(var w in frequencies) {
-	collection.update({word:w, username:user}, {$inc:{freq:frequencies[w]}}, {upsert:true});
+	//console.log(w);
+	//console.log(frequencies[w]);
+	collection.update({word:w, username:user}, {$inc:{freq:frequencies[w]}}, {upsert:true, multi:true});
     }
 };
 
 var write_word_chunk = function(chunk, next_word, user) {
+
+    console.log("Write Word Chunk: " + chunk + ", " + next_word);
+
     var mongo = require('mongodb');
     var monk = require('monk');
     var db = monk('localhost:27017/predictionary');
     var collection = db.get('user_chunks');
     
     for(var i in chunk) {
-	collection.update({word1:chunk[0], word2:chunk[1], word3:chunk[2], username:user}, {$addToSet:{word:next_word}}, {upsert:true});
+	collection.update({word1:chunk[0], word2:chunk[1], word3:chunk[2], username:user}, {$addToSet:{word:next_word}}, {upsert:true, multi:true});
     }
 };
 
