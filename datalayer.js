@@ -34,6 +34,9 @@ var get_fdict_freq = function(word, callback) {
 };
 
 var write_word_freq = function(frequencies, user) {
+
+    console.log("Write Frequency: " + frequencies);
+
     var mongo = require('mongodb');
     var monk = require('monk');
     var db = monk('localhost:27017/predictionary');
@@ -45,6 +48,9 @@ var write_word_freq = function(frequencies, user) {
 };
 
 var write_word_chunk = function(chunk, next_word, user) {
+
+    console.log("Write Word Chunk: " + chunk + ", " + next_word);
+
     var mongo = require('mongodb');
     var monk = require('monk');
     var db = monk('localhost:27017/predictionary');
